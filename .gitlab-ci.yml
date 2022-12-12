@@ -1,0 +1,12 @@
+stages:
+  - test
+
+unit-test:
+  image: node:alpine
+  before_script:
+    - npm ci
+  script:
+    - npm run test
+  tags:
+    - shared
+
