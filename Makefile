@@ -17,3 +17,7 @@ destroy: stop delete
 
 log:
 	docker logs -f devops-learning
+
+register-runner:
+	gitlab-runner register
+

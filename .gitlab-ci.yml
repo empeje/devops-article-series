@@ -8,5 +8,5 @@ unit-test:
   script:
     - npm run test
   tags:
-    - shared
+    - personal
 
