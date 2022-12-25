@@ -9,4 +9,5 @@ unit-test:
     - npm run test
   tags:
     - personal
+    - shell
 
