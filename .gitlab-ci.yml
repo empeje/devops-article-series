@@ -1,3 +1,16 @@
+.sast_html: &sast_html
+  services:
+    - name: docker:dind
+      command: ["--tls=false"]
+  after_script:
+    - apk add --update docker openrc
+    - docker pull pcfens/sast-parser
+    - alias sast-parser="docker run --rm -v \"$(pwd):/reports\" pcfens/sast-parser"
+    - sast-parser ${INPUT_JSON} > ${OUTPUT_HTML}
+  artifacts:
+    paths:
+      - ${OUTPUT_HTML}
+
 stages:
   - test
 
@@ -14,3 +27,31 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Container-Scanning.gitlab-ci.yml
   - template: Jobs/Secret-Detection.gitlab-ci.yml
+
+nodejs-scan-sast:
+  <<: *sast_html
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    INPUT_JSON: "gl-sast-report.json"
+    OUTPUT_HTML: "nodejs-scan-sast.html"
+
+secret_detection:
+  <<: *sast_html
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    INPUT_JSON: "gl-secret-detection-report.json"
+    OUTPUT_HTML: "secret-detection-sast.html"
+
+semgrep-sast:
+  <<: *sast_html
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_TLS_CERTDIR: ""
+    INPUT_JSON: "gl-sast-report.json"
+    OUTPUT_HTML: "semgrep-sast.html"
+
